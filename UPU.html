@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <!-- <link href='https://fonts.googleapis.com/css?family=Cairo' rel='stylesheet'> -->
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <title>UPU</title>
+      <style>
+         * {
+         box-sizing: border-box;
+         margin: 0;
+         padding: 0;
+         font-family: 'SPLFont','Cairo', 'Arial', sans-serif;
+         letter-spacing: 0px;
+         }
+         @font-face {
+         font-family: 'SPLFont';
+         src: url(./URWGeometricArabic-Regular.ttf) format('truetype');
+         }
+         html, body {
+         overflow-x: hidden;
+         position: relative;
+         width: 100%;
+         }
+         body {
+         background: linear-gradient(135deg, #1a2a3a 0%, #0d1620 100%);
+         color: #ffffff;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         align-items: center;
+         min-height: 100vh;
+         padding: 20px;
+         }
+         .quiz-container {
+         background-color: rgba(255, 255, 255, 0.1);
+         border-radius: 15px;
+         box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+         padding: 20px;
+         width: 100%;
+         max-width: 600px;
+         position: relative;
+         z-index: 1;
+         }
+         h1 {
+         color: #00ccff;
+         text-align: center;
+         margin-bottom: 20px;
+         font-size: 2em;
+         text-transform: uppercase;
+         letter-spacing: 2px;
+         word-wrap: break-word;
+         }
+         .question {
+         font-size: 1.2em;
+         color: #ffffff;
+         margin-bottom: 20px;
+         text-align: center;
+         word-wrap: break-word;
+         }
+         .options {
+         display: grid;
+         gap: 10px;
+         }
+         .option {
+         background-color: rgba(255, 255, 255, 0.1);
+         border: 2px solid #00ccff;
+         border-radius: 10px;
+         padding: 12px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         text-align: center;
+         word-wrap: break-word;
+         }
+         .option:hover {
+         background-color: rgba(0, 204, 255, 0.2);
+         }
+         .option.selected {
+         background-color: #00ccff;
+         color: #1a2a3a;
+         }
+         .option.disabled {
+         opacity: 0.5;
+         cursor: not-allowed;
+         }
+         .submit-btn {
+         display: block;
+         width: 100%;
+         padding: 12px;
+         background-color: #ff1493;
+         color: white;
+         border: none;
+         border-radius: 10px;
+         font-size: 1.1em;
+         cursor: pointer;
+         margin-top: 20px;
+         transition: background-color 0.3s ease;
+         text-transform: uppercase;
+         letter-spacing: 1px;
+         }
+         .submit-btn:hover {
+         background-color: #ff69b4;
+         }
+         .submit-btn:disabled {
+         background-color: #cccccc;
+         cursor: not-allowed;
+         }
+         .feedback {
+         text-align: center;
+         font-weight: bold;
+         margin-top: 15px;
+         font-size: 1.1em;
+         word-wrap: break-word;
+         }
+         .decoration {
+         position: fixed;
+         width: 200px;
+         height: 200px;
+         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,50 Q50,30 70,50 T90,50" fill="none" stroke="%2300ccff" stroke-width="2"/></svg>');
+         background-size: contain;
+         opacity: 0.1;
+         z-index: 0;
+         pointer-events: none;
+         }
+         .decoration:nth-child(1) {
+         top: 0;
+         left: 0;
+         transform: rotate(45deg);
+         }
+         .decoration:nth-child(2) {
+         bottom: 0;
+         right: 0;
+         transform: rotate(-135deg);
+         }
+         footer {
+         margin-top: 20px;
+         background-color: #1a2a3a;
+         color: #ffffff;
+         text-align: center;
+         padding: 10px 0;
+         font-size: 1em;
+         width: 100%;
+         }
+         footer a {
+         color: #00ccff;
+         text-decoration: none;
+         }
+         /* for the box */
+         .modal {
+         display: none; 
+         position: fixed; 
+         z-index: 10; 
+         left: 0;
+         top: 0;
+         width: 100%; 
+         height: 100%;
+         overflow: auto; 
+         background-color: rgb(0,0,0);
+         background-color: rgba(0,0,0,0.4); 
+         }
+         .modal-content {
+         background-color: #fefefe;
+         margin: 70% auto; 
+         padding: 30px 20px;
+         border: 1px solid #888;
+         width: 80%;
+         max-width: 400px;
+         border-radius: 10px;
+         text-align: center;  
+         }
+         .modal-content h2 {
+         color: #ff1493; 
+         }
+         /* logo */
+         .logo-container {
+         top: 20px;
+         left: 20px;
+         z-index: 2; 
+         pointer-events: none; 
+         }
+         .logo {
+        margin: 30px 0 25px 0;
+        }
+         /* input */
+         .only99 input#nums {
+         width: 220px;
+         height: 70px;
+         text-align: center;
+         font-size: 2em;
+         background-color: white;
+         color: #1a2a3a;
+         border: 2px solid #00ccff;
+         border-radius: 10px;
+         box-shadow: 0 0 5px rgba(0, 204, 255, 0.3);
+         transition: all 0.3s ease;
+         }
+         .only99 input#nums:focus {
+         outline: none;
+         border-color: #ff1493;
+         box-shadow: 0 0 8px rgba(255, 20, 147, 0.5);
+         }
+         .only99 input#nums::placeholder {
+         color: #cccccc;
+         }
+         /* Hide spinner for number input */
+         .only99 input#nums::-webkit-inner-spin-button,
+         .only99 input#nums::-webkit-outer-spin-button {
+         -webkit-appearance: none;
+         margin: 0;
+         }
+         .only99 input#nums {
+         -moz-appearance: textfield;
+         }
+         @media (max-width: 480px) {
+         body {
+         padding: 10px;
+         }
+         .quiz-container {
+         padding: 15px;
+         }
+         h1 {
+         font-size: 1.5em;
+         }
+         .question {
+         font-size: 1em;
+         }
+         .option {
+         padding: 10px;
+         }
+         .submit-btn {
+         padding: 10px;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div class="logo-container">
+         <img src="https://github.com/FS-17/UPU/blob/main/logo.png?raw=true" alt="Logo" class="logo" width="250" >
+      </div>
+      <div class="decoration"></div>
+      <div class="decoration"></div>
+      <div class="quiz-container">
+         <h1>
+         الخزنه رقم 
+         <h1>
+         <div class="question"></div>
+         <div class="options">
+            <div class="option" id="o1" onclick="selectOption(this)"></div>
+            <div class="option" id="o2" onclick="selectOption(this)"></div>
+            <div class="option" id="o3" onclick="selectOption(this)"></div>
+            <div class="option" id="o4"onclick="selectOption(this)"></div>
+         </div>
+         <div class="only99" style="display: none;">
+            <!-- input 3 numbers -->
+            <input type="number" id="nums" min="000" max="999" style="width: 220px; height: 70px; text-align: center; font-size: 2em;" oninput="checkLength(this)">
+         </div>
+         <button class="submit-btn" onclick="submitAnswer()">جاوب</button>
+         <div id="myModal" class="modal">
+            <div class="modal-content">
+               <h2 class="modal-title"></h2>
+            </div>
+         </div>
+         <div class="feedback"></div>
+      </div>
+      <footer>
+         Made by <a href="https://www.linkedin.com/in/faisalalsaweed/">Faisal Alsaweed</a>
+      </footer>
+      <script>
+         // get the values in the url after the ?
+         const urlParams = new URLSearchParams(window.location.search);
+         const qNum = urlParams.get('q');
+         var question;
+         
+         if (qNum == "99"){
+             // special case for the last question
+             document.querySelector('h1').textContent = ` رقم ${qNum}`;
+             // document.querySelector('.question').textContent = 'الخزنه الأخيره';
+             // remove all options
+             document.querySelectorAll('.option').forEach(opt => opt.style.display = 'none');
+             // show the input fields
+             document.querySelector('.only99').style.display = 'block';
+             question = {
+                 question: "206 رقمين صحيحين لكن المكان خاطئ\n614 رقم صحيح لكن المكان غير صحيح\n682 رقم صحيح ومكانه صحيح\n780 رقم صحيح لكن ليس في مكانه\n738 و لا رقم صحيح بين هذه الأرقام",
+                 options: ['000', '000', '000', '000'],
+                 correct_answer: '042',
+                 pass: '042'
+             };
+         
+             // add the question.question to the document.querySelector('.question') but make it in <p> tag
+             const p = document.createElement('pre');
+             p.innerHTML = question.question.replace(/(\d+)/g, '<span style="color: #ff1493; font-size: 1.1em; font-weight: bold;">$1</span>');
+             p.style.fontSize = '0.8em'; // Make the text smaller
+             document.querySelector('.question').appendChild(p);
+         
+             // change button onclick function
+             document.querySelector('.submit-btn').onclick = function() {
+                 const input = document.getElementById('nums');
+                 specialSubmitAnswer(input.value);
+             };
+             
+             
+         }else{
+         const url = 'https://raw.githubusercontent.com/FS-17/UPU/refs/heads/main/q.json';
+         fetch(url)
+             .then(response => response.json())
+             .then(data => {
+                 question = data[qNum];
+                 document.querySelector('h1').textContent = `الخزنه رقم ${qNum}`;
+                 document.querySelector('.question').textContent = question.question;
+                 document.getElementById('o1').textContent = question.options[0];
+                 document.getElementById('o2').textContent = question.options[1];
+                 document.getElementById('o3').textContent = question.options[2];
+                 document.getElementById('o4').textContent = question.options[3];
+             });
+         }
+         
+         let answered = false;
+         
+         function selectOption(option) {
+             if (answered) return;
+             const options = document.querySelectorAll('.option');
+             options.forEach(opt => opt.classList.remove('selected'));
+             option.classList.add('selected');
+         }
+         
+         function submitAnswer() {
+             if (answered) return;
+             
+             const selected = document.querySelector('.option.selected');
+             const feedback = document.querySelector('.feedback');
+             const submitBtn = document.querySelector('.submit-btn');
+             const modal = document.getElementById('myModal');
+             const modalTitle = document.querySelector('.modal-title');
+             
+             if (!selected && qNum != "99") {
+                 feedback.textContent = 'رجاء اختر إجابة.';
+                 feedback.style.color = '#ff1493';
+                 return;
+             }
+         
+             answered = true;
+         
+             
+             
+             if (selected.textContent === question.correct_answer){
+                 // feedback.textContent = 'احسنت, هذا هو رمز الخزنه 1923';
+                 // feedback.style.color = '#00ccff';
+                 modalTitle.textContent = ' احسنت, هذا هو رمز الخزنه ' + question.pass;
+                 modalTitle.style.color = '#00ccff';
+                 modal.style.display = "block";
+         
+             } else {
+                 modalTitle.textContent = 'إجابة خاطئة';
+                 modalTitle.style.color = '#ff1493';
+                 modal.style.display = "block"; 
+         
+             }
+         
+             // Disable all options and the submit button
+             document.querySelectorAll('.option').forEach(opt => {
+                 opt.classList.add('disabled');
+                 opt.onclick = null;
+             });
+             submitBtn.disabled = true;
+         }
+         
+         function specialSubmitAnswer(answer) {
+             const feedback = document.querySelector('.feedback');
+             const modal = document.getElementById('myModal');
+             const modalTitle = document.querySelector('.modal-title');
+             if (answer === question.correct_answer){
+                 // feedback.textContent = 'احسنت, هذا هو رمز الخزنه 1923';
+                 // feedback.style.color = '#00ccff';
+                 modalTitle.textContent = ' احسنت, هذا هو رمز الخزنه ' + question.pass;
+                 modalTitle.style.color = '#00ccff';
+                 modal.style.display = "block";
+             } else {
+                 feedback.textContent = 'إجابة خاطئة حاول مره اخرى';
+                 feedback.style.color = '#ff1493';
+             }
+         }
+         
+         
+         function checkLength(input) {
+             if (input.value.length == 3) {
+                 specialSubmitAnswer(input.value);
+                 // unfocus 
+                 input.blur();
+             }if (input.value.length > 3) {
+                 input.value = input.value.slice(0, 3);
+             }
+         }
+      </script>
+   </body>
+</html>
