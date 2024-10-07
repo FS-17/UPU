@@ -270,10 +270,12 @@
          const urlParams = new URLSearchParams(window.location.search);
          const qNum = urlParams.get('q');
          var question;
+
+         document.querySelector('h1').textContent = `الخزنه رقم ${qNum}`;
+
          
          if (qNum == "99"){
              // special case for the last question
-             document.querySelector('h1').textContent = ` رقم ${qNum}`;
              // document.querySelector('.question').textContent = 'الخزنه الأخيره';
              // remove all options
              document.querySelectorAll('.option').forEach(opt => opt.style.display = 'none');
@@ -305,7 +307,6 @@
              .then(response => response.json())
              .then(data => {
                  question = data[qNum];
-                 document.querySelector('h1').textContent = `الخزنه رقم ${qNum}`;
                  document.querySelector('.question').textContent = question.question;
                  document.getElementById('o1').textContent = question.options[0];
                  document.getElementById('o2').textContent = question.options[1];
